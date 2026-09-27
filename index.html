@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Untuk Kamu - Mabar ML</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Courier New', Courier, monospace, sans-serif;
+      user-select: none;
+    }
+
+    body {
+      background-color: #0b0914;
+      color: #e0dcf5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 420px;
+      height: 90vh;
+      max-height: 750px;
+      background: linear-gradient(180deg, #120e24 0%, #080612 100%);
+      border: 1px solid #3b2d6b;
+      border-radius: 20px;
+      position: relative;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.8), 0 0 15px rgba(157, 114, 255, 0.2);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Animasi Slide */
+    .slide {
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100%;
+      padding: 24px;
+      position: relative;
+      opacity: 0;
+      transform: translateY(15px) scale(0.98);
+      transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    .slide.active {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .page-number {
+      font-size: 12px;
+      color: #8c82ba;
+      letter-spacing: 1px;
+    }
+
+    .content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      gap: 16px;
+      z-index: 2;
+    }
+
+    /* Kursor Animasi Mengetik */
+    .typewriter-cursor::after {
+      content: '|';
+      animation: blink 0.7s infinite;
+      color: #d1b8ff;
+      font-weight: bold;
+      margin-left: 2px;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* Animasi Bintang Floating */
+    .floating-star {
+      animation: float 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px) rotate(0deg); }
+      100% { transform: translateY(-8px) rotate(10deg); }
+    }
+
+    h1, h2 {
+      font-family: cursive, sans-serif;
+      color: #d1b8ff;
+      text-shadow: 0 0 10px rgba(209, 184, 255, 0.4);
+      min-height: 40px;
+    }
+
+    .paper-note {
+      background: #e8e3d5;
+      color: #222;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      text-align: left;
+      font-size: 13px;
+      line-height: 1.6;
+      width: 90%;
+      transform: rotate(-1deg);
+      transition: transform 0.3s ease;
+    }
+
+    .paper-note:hover {
+      transform: rotate(0deg) scale(1.02);
+    }
+
+    .paper-note h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+      border-bottom: 1px dashed #666;
+      padding-bottom: 4px;
+    }
+
+    .paper-note ul {
+      list-style-type: '✓ ';
+      padding-left: 16px;
+    }
+
+    /* Opsi yang dapat dipilih (Selectable Option) */
+    .option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      width: 90%;
+    }
+
+    .option-item {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: left;
+      font-size: 14px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .option-item:hover {
+      background: rgba(157, 114, 255, 0.15);
+      border-color: #9d72ff;
+      transform: translateX(4px);
+    }
+
+    .option-item.selected {
+      background: #6c5ce7;
+      color: #ffffff;
+      border-color: #a29bfe;
+      box-shadow: 0 0 12px rgba(108, 92, 231, 0.6);
+    }
+
+    /* Player Card Interactive */
+    .player-card {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 16px;
+      border-radius: 12px;
+      width: 90%;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .player-card:active {
+      transform: scale(0.96);
+    }
+
+    .play-icon {
+      font-size: 24px;
+      transition: transform 0.2s ease;
+    }
+
+    .player-card:hover .play-icon {
+      transform: scale(1.2);
+    }
+
+    /* Button Styling & Animation */
+    .btn {
+      background: transparent;
+      border: 1px solid #9d72ff;
+      color: #d1b8ff;
+      padding: 10px 24px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 10px rgba(157, 114, 255, 0.2);
+    }
+
+    .btn:hover {
+      background-color: #9d72ff;
+      color: #fff;
+      box-shadow: 0 0 20px rgba(157, 114, 255, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(1px);
+    }
+
+    .nav-buttons {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      z-index: 10;
+    }
+
+    .nav-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: #aaa;
+      padding: 8px 18px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .nav-btn:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Kotak Undangan */
+    .invitation-box {
+      background: #1c1833;
+      border: 1px solid #58449c;
+      padding: 20px;
+      border-radius: 16px;
+      width: 90%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      animation: pulse 2s infinite alternate;
+    }
+
+    @keyframes pulse {
+      0% { border-color: #58449c; }
+      100% { border-color: #9d72ff; }
+    }
+
+    .invitation-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+      justify-content: center;
+    }
+
+    .btn-accept {
+      background: #6c5ce7;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.2s;
+    }
+
+    .btn-accept:hover {
+      background: #5b4cc4;
+      transform: scale(1.05);
+    }
+
+    .btn-decline {
+      background: #2b2545;
+      color: #aaa;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-decline:hover {
+      background: #3a335c;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Slide 1 -->
+  <div class="slide active" id="slide-1">
+    <div class="page-number">1/12</div>
+    <div class="content">
+      <p style="font-style: italic; font-size: 12px;" class="type-text">A little gift for you ♡</p>
+      <h1 class="type-text">Untuk kamu ♡</h1>
+      <p class="type-text">Dari : aku</p>
+      <p style="font-size: 12px; color: #a29bfe;" class="type-text">Tentang : ajakan main ML bareng</p>
+      <button class="btn" onclick="goToPage(2)">open this ♡</button>
+    </div>
+    <div class="nav-buttons"><div></div><button class="nav-btn" onclick="changePage(1)">Next &gt;</button></div>
+  </div>
+
+  <!-- Slide 2 -->
+  <div class="slide" id="slide-2">
+    <div class="page-number">2/12</div>
+    <div class="content">
+      <p class="type-text">Haii kamu...</p>
+      <p class="type-text">Iya, kamu yang lagi baca ini.</p>
+      <br>
+      <p class="type-text">Aku cuma mau bilang...</p>
+      <h2 class="type-text">ayo main ML bareng ♡</h2>
+      <p style="font-size: 12px; color: #888;" class="type-text">serius, deh.</p>
+    </div>
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="changePage(-1)">&lt; Prev</button>
+      <button class="nav-btn" onclick="changePage(1)">Next &gt;</button>
+    </div>
+  </div>
+
+  <!-- Slide 3 -->
+  <div class="slide" id="slide-3">
+    <div class="page-number">3/12</div>
+    <div class="content">
+      <p class="type-text">Udah lama ya kita nggak main bareng?</p>
+      <p style="font-size: 13px; color: #aaa;" class="type-text">Padahal dulu sering banget, kan?</p>
+      <br>
+      <p style="font-size: 13px;" class="type-text">Sekarang coba lagi yuk. Bukan cuma buat menang, tapi buat seru-seruan, ngobrol, ketawa-ketawa, atau bahkan diem bareng juga gapapa. ♡</p>
+    </div>
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="changePage(-1)">&lt; Prev</button>
+      <button class="nav-btn" onclick="changePage(1)">Next &gt;</button>
+    </div>
+  </div>
+
+  <!-- Slide 4 -->
+  <div class="slide" id="slide-4">
+    <div class="page-number">4/12</div>
+    <div class="content">
+      <div class="paper-note">
+        <h3 class="type-text">Kenapa kamu? ☆</h3>
+        <ul>
+          <li class="type-text">selalu ada di saat gabut</li>
+          <li class="type-text">bisa jadi tim yang solid</li>
+          <li class="type-text">bikin game jadi lebih seru</li>
+          <li class="type-text">selalu bisa bikin aku ketawa</li>
+          <li class="type-text">dan... kamu itu spesial ♡</li>
+        </ul>
+      </div>
+      <p style="margin-top: 10px;" class="type-text">jadi ya... main ML bareng lagi yuk? :)</p>
+    </div>
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="changePage(-1)">&lt; Prev</button>
+      <button class="nav-btn" onclick="changePage(1)">Next &gt;</button>
+    </div>
+  </div>
+
+  <!-- Slide 5 -->
+  <div class="slide" id="slide-5">
+    <div class="page-number">5/12</div>
+    <div class="content">
+      <div class="paper-note">
+        <p class="type-text">Untuk kamu,</p><br>
+        <p class="type-text">Aku tahu mungkin sekarang kita lagi sibuk dengan urusan masing-masing. Tapi aku masih pengen punya waktu buat kamu, meskipun cuma lewat satu game sederhana.</p><br>
+        <p class="type-text">Jadi, gimana? Masih mau jadi temen main aku? ♡</p>
+        <p style="text-align: right; margin-top: 8px;" class="type-text">— aku</p>
+      </div>
+    </div>
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="changePage(-1)">&lt; Prev</button>
+      <button class="nav-btn" onclick="changePage(1)">Next &gt;</button>
+    </div>
+  </div>
+
+  <!-- Slide 6 -->
+  <div class="slide" id="slide-6">
+    <div class="page-number">6/12</div>
+    <div class="content">
+      <p style="font-size: 14px; margin-bottom: 8px;" class="type-text">Pilih mode main kita nanti &gt;.&lt;</p>
+      <div class="option-list">
+        <div class="option-item" onclick="selectOption(this)">
+          <span class="type-text">✓ Rank / Classic</span><span>🎮</span>
+        </div>
+        <div class="option-item" onclick="selectOption(this)">
+          <span class="type-text">✓ Push Rank Banget</span><span>🔥</span>
+        </div>
+        <div class="option-item" onclick="selectOption(this)">
+          <span class="type-text">✓ Cuma Fun Aja</span><span>✨</span>
+        </div>
+        <div class="option-item" onclick="selectOption(this)">
+          <span class="type-text">✓ Yang penting bareng kamu ♡</span><span>💜</span>
+        </div>
+      </div>
+    </div>
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="changePage(-1)">&lt; Prev</button>
+      <button class="nav-btn" onclick="changePage(1)">Next &gt;</button>
+    </div>
+  </div>
+
+  <!-- Slide 7 -->
+  <div class="slide" id="slide-7">
+    <div class="page-number">7/12</div>
+    <div class="content">
+      <p style="font-size: 12px;" class="type-text">Lagu buat nemenin main kita nanti... (Tekan untuk putar)</p>
+      <div class="player-card" id="musicCard" onclick="togglePlayMusic()">
+        <div class="play-icon" id="playIcon">▶️</div>
+        <div style="text-align: left;">
+          <p style="font-weight: bold; font-size: 14px;" class="type-text">Better Together</p>
+          <p style="font-size: 11px; color: #aaa;" id="musicStatus">Jack Johnson - Ketuk untuk memutar</p>
+        </div>
+      </div>
+      <p style="font-size: 12px; color: #bbb;" class="type-text">Karena game ini lebih seru kalau ditemenin sama kamu. ♡</p>
+    </div>
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="changePage(-1)">&lt; Prev</button>
+      <button class="nav-btn" onclick="changePage(1)">Next &gt;</button>
+    </div>
+  </div>
+
+  <!-- Slide 8 -->
+  <div class="slide" id="slide-8">
+    <div class="page-number">8/12</div>
+    <div class="content">
+      <h2 class="type-text">Jadi... kapan kita main? ♡</h2>
+      <p style="font-size: 13px; color: #aaa;" class="type-text">aku udah siap kapan aja kamu juga yaa ♡</p>
+    </div>
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="changePage(-1)">&lt; Prev</button>
+      <button class="nav-btn" onclick="changePage(1)">Next &gt;</button>
+    </div>
+  </div>
+
+  <!-- Slide 9 -->
+  <div class="slide" id="slide-9">
+    <div class="page-number">9/12</div>
+    <div class="content">
+      <p class="type-text">Terima kasih sudah selalu ada, meskipun kadang cuma lewat chat.</p>
+      <p class="type-text">Makasih udah jadi kamu.</p>
+      <br>
+      <p style="color: #d1b8ff;" class="type-text">See you in game, my favorite person ♡</p>
+      <p style="font-size: 12px; color: #777; margin-top: 20px;" class="type-text">— aku</p>
+    </div>
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="changePage(-1)">&lt; Prev</button>
+      <button class="nav-btn" onclick="changePage(1)">Next &gt;</button>
+    </div>
+  </div>
+
+  <!-- Slide 10 -->
+  <div class="slide" id="slide-10">
+    <div class="page-number">10/12</div>
+    <div class="content">
+      <div class="invitation-box">
+        <p style="font-size: 12px; color: #aaa;" class="type-text">MLBB - Invitation</p>
+        <p style="font-size: 15px; margin: 10px 0; font-weight: bold;" class="type-text">Kamu telah diundang ke dalam tim!</p>
+        <div class="invitation-buttons">
+          <button class="btn-decline" id="btnDecline" onclick="handleInvite('Tolak')">Tolak</button>
+          <button class="btn-accept" id="btnAccept" onclick="handleInvite('Terima')">Terima</button>
+        </div>
+      </div>
+      <p style="font-size: 12px; margin-top: 16px;" class="type-text">Jangan lupa ya... aku selalu nunggu kamu di Land of Dawn ♡</p>
+    </div>
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="changePage(-1)">&lt; Prev</button>
+      <button class="nav-btn" onclick="changePage(1)">Next &gt;</button>
+    </div>
+  </div>
+
+  <!-- Slide 11 -->
+  <div class="slide" id="slide-11">
+    <div class="page-number">11/12</div>
+    <div class="content">
+      <div class="paper-note">
+        <h3 class="type-text">Special Note :</h3>
+        <ul>
+          <li class="type-text">jangan lupa top up (ehh)</li>
+          <li class="type-text">pake hero andalan kamu</li>
+          <li class="type-text">jangan toxic</li>
+          <li class="type-text">dan yang paling penting...</li>
+          <li class="type-text">jangan lupa senyum :)</li>
+        </ul>
+      </div>
+      <p style="margin-top: 12px;" class="type-text">See you soon ♡</p>
+    </div>
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="changePage(-1)">&lt; Prev</button>
+      <button class="nav-btn" onclick="changePage(1)">Next &gt;</button>
+    </div>
+  </div>
+
+  <!-- Slide 12 -->
+  <div class="slide" id="slide-12">
+    <div class="page-number">12/12</div>
+    <div class="content">
+      <h1 style="font-size: 28px;" class="type-text">Let's Play ML Together ♡</h1>
+      <button class="btn" style="margin-top: 20px;" onclick="goToPage(1)">Mulai Lagi →</button>
+    </div>
+    <div class="nav-buttons">
+      <button class="nav-btn" onclick="changePage(-1)">&lt; Prev</button>
+      <div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let currentPage = 1;
+  const totalPages = 12;
+  let isPlayingMusic = false;
+  let activeTimeouts = [];
+
+  // Fungsi Efek Ketik (Typewriter Effect)
+  function startTypewriter(slideElement) {
+    // Hentikan pengetikan yang sedang berjalan dari slide sebelumnya
+    activeTimeouts.forEach(timeout => clearTimeout(timeout));
+    activeTimeouts = [];
+
+    const textElements = slideElement.querySelectorAll('.type-text');
+    
+    textElements.forEach(el => {
+      // Simpan teks asli pada dataset jika belum pernah disimpan
+      if (!el.dataset.originalText) {
+        el.dataset.originalText = el.innerText;
+      }
+      
+      const fullText = el.dataset.originalText;
+      el.innerText = ''; // Kosongkan teks sebelum mulai diketik
+      el.classList.add('typewriter-cursor');
+
+      let charIndex = 0;
+      function typeChar() {
+        if (charIndex < fullText.length) {
+          el.innerText += fullText.charAt(charIndex);
+          charIndex++;
+          const timeout = setTimeout(typeChar, 35); // Kecepatan ketik (35ms)
+          activeTimeouts.push(timeout);
+        } else {
+          el.classList.remove('typewriter-cursor'); // Hapus kursor setelah selesai
+        }
+      }
+
+      typeChar();
+    });
+  }
+
+  // Navigasi Halaman
+  function showPage(page) {
+    if (page < 1 || page > totalPages) return;
+    
+    for (let i = 1; i <= totalPages; i++) {
+      const slideElement = document.getElementById(`slide-${i}`);
+      if (slideElement) {
+        slideElement.classList.remove('active');
+      }
+    }
+
+    const activeSlide = document.getElementById(`slide-${page}`);
+    if (activeSlide) {
+      activeSlide.classList.add('active');
+      currentPage = page;
+      // Jalankan animasi ketik pada slide yang baru dibuka
+      startTypewriter(activeSlide);
+    }
+  }
+
+  function changePage(direction) {
+    showPage(currentPage + direction);
+  }
+
+  function goToPage(page) {
+    showPage(page);
+  }
+
+  // Interaksi Opsi Pilih
+  function selectOption(element) {
+    element.classList.toggle('selected');
+  }
+
+  // Interaksi Musik
+  function togglePlayMusic() {
+    const playIcon = document.getElementById('playIcon');
+    const musicStatus = document.getElementById('musicStatus');
+    
+    isPlayingMusic = !isPlayingMusic;
+
+    if (isPlayingMusic) {
+      playIcon.innerText = '⏸️';
+      musicStatus.innerText = 'Sedang diputar... 🎵';
+    } else {
+      playIcon.innerText = '▶️';
+      musicStatus.innerText = 'Jack Johnson - Ketuk untuk memutar';
+    }
+  }
+
+  // Interaksi Undangan
+  function handleInvite(action) {
+    const acceptBtn = document.getElementById('btnAccept');
+    const declineBtn = document.getElementById('btnDecline');
+
+    if (action === 'Terima') {
+      acceptBtn.innerText = 'Diterima! ✓';
+      acceptBtn.style.backgroundColor = '#2ec4b6';
+      declineBtn.style.display = 'none';
+      alert('Yeay! Ditunggu di Land of Dawn ya! 🎮');
+    } else {
+      declineBtn.innerText = 'Ditolak :(';
+      alert('Tetap ditunggu kok! Buka game-nya kapan-kapan ya ♡');
+    }
+  }
+
+  // Jalankan animasi ketik pertama kali saat halaman dimuat
+  window.onload = () => {
+    const firstSlide = document.getElementById('slide-1');
+    if (firstSlide) {
+      startTypewriter(firstSlide);
+    }
+  };
+</script>
+
+</body>
+</html>
